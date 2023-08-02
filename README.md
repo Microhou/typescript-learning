@@ -389,5 +389,208 @@
    ```
    4. 联合类型守卫
     ```ts
-        
+        interface Car {
+            type：'car';
+            brand: string;
+            wheels: number;
+        }
+        interface Bicycle {
+            type: 'bicycle';
+            color: sting;
+        }
+        interface Motorcycle {
+            type: 'motorcycle';
+            engine: number;
+        }
+        type Vehicle = Car | Bicycle | Motorcycle;
+        function printVehicleInfo(vehicle: Vehicle){
+            switch(vehicle.type){
+                case 'car':
+                    console.log(`Brand: ${vehicle.brand}, wheels: ${vehicle.wheels}`);
+                    bread;
+                case 'bicycle':
+                    console.log(`Color: ${vehicle.color}`);
+                    bread;
+                default:
+                    const _exhaustiveCheck: never = vehicle;
+            }
+        }
+
+        const car: Car = {type: 'car', brand: 'Toyota', wheels: 4};
+        printVehicle(car);
     ```
+    5. 使用in 操作符进行类型守卫
+        - in 操作符可以typescript 中判断一个属性是否存在于对象中，从而进行类型判断和类型守窄
+        ```ts
+            interface Circle {
+                kind: 'circle';
+                radius: number;
+            }
+            interface Rectangle {
+                kind: 'rectangle';
+                width: number;
+                height: number;
+            }
+            type Shape = Circle | Rectangle;
+            function printArea(shape: Shape){
+                if('radius' in shape){
+                    console.log(Math.PI * shape.radius ** 2)
+                }else {
+                    console.log(shape.width * shape.height)
+                }
+            }
+            const circle: Circle = { kind：'circle', radius: 5};
+            const rectangle: Rectangle = {kind: 'rectangle', width： 10， height: 10};
+            printArea(circle);
+            printArea(rectangle)
+        ```
+    6.  自定义类型判断（type predicates）守卫
+        ```ts
+            interface Bird {
+                fly():void
+            }
+            interface Fish {
+                swim(): void
+            }
+        ```
+## 泛型和类型体操（Type Gymnastics）
+1. 泛型函数
+   ```ts
+    function identity<T>(arg: T): T {
+        return arg;
+    }
+    let result = identity<number>(42);
+   ```
+2. 泛型接口
+   ```ts
+    interface Container<T> {
+        value: T
+    }
+    let container: Container<number> = {
+        value: 43
+    }
+   ```
+3. 泛型类
+   ```ts
+    class Stack<T> {
+        private items: T[] = [];
+
+        push(item: T){
+            this.items.push(item);
+        }
+
+        pop(): T | undefined{
+            this.item.pop();
+        }
+    }
+    let stack = new Stack();
+    stack.push(1);
+    stack.push(2);
+    stack.pop();
+   ```
+### 类型体操（Type Gymnastics）
+1.  条件类型
+    > T extends U ? X : Y
+    其中，T 是待检查类型，U是条件类型， X是满足条件是返回的类型。Y是不满足条件时返回的类型。
+    ```ts
+        type Check<T> = T extends string ? true : false;
+        type Result = Check<string>; // type Result = true
+    ```
+2. keyof 操作符和索引访问类型
+   keyof 操作符用于获取类型的所有属性名，结合索引访问类型可以从一个类型中获取属性的具体类型
+   ```ts
+    interface Person {
+        name: string;
+        age: number;
+    }
+    type PersonKeys = keyof Person; // "name" | "age"
+    type PersonNameType = Person['name'];
+   ```
+3. infer 关键字
+   ```ts
+        type ReturnTyped<T> = T extends (...args: any[]) => infer R ? R : never;
+        function add(a: number, b: number):number {
+                return a + b;
+        }
+
+        type AddReturnValue = ReturnTyped<typeof add>
+   ```
+4. extends 关键字和类型约束
+   ```ts
+    function printProterty<T extends {name: string}>(obj: T): void {
+        console.log(obj.name);
+    }
+    printProterty({name: "John", age: 24})
+   ```
+5. 泛型函数Util
+   - Partial
+   - Required
+   - Pick
+  ```ts
+    function pickProperties<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
+        const result: Partial<T> = {};
+        for (const key of keys) {
+            result[key] = obj[key];
+        }
+
+        return result as Pick<T, K>
+    }
+
+    interface Person2 {
+        name: string;
+        age: number;
+        address: string;
+    }
+    const person: Person2 = {
+        name: "Tom",
+        age: 32,
+        address: '123 main str'
+    }
+
+    const nameAndAge = pickProperties(person, ['name', 'age'])
+    console.log(nameAndAge); // {"name": "Tom","age": 32} 
+  ```
+  - Exclude<T, U>  --> 用于从类型T中排除类型U， 返回一个新的类型。该新类型包含在T中存在但不存在U中的成员类型。
+    ```ts
+        tppe T = Exclude<'a' | 'b' | 'c', 'a' | 'b'> // T 的类型为c
+    ```
+- Omit<T, K> -- 返回一个新的类型， 该新的类型排除了类型T中指定的属性K。
+  ```ts
+    interface Person {
+        name: string;
+        age: number;
+        address: string;
+    }
+    type PersonWithoutAddress = Omit<Person, 'address'>
+  ```
+  - Readonly
+  ```ts
+    interface Person {
+        name: string;
+        age: number;
+    }
+    type ReadonlyPerson = Readonly<Person>
+  ```
+## 类型兼容： 结构化类型
+- '鸭子类型（Duck Typing）或者 结构化类型（structural Typing）'
+- 鸭子类型意味者一个对象的类型不是由它继承或实现的具体类别决定的，而是由它具体的结构决定的。
+1. 鸭子类型的定义 
+   ```ts
+    interface Duck {
+        walk: () => void;
+        quack: () => void;
+    }
+    function doDuckThings(duck: Duck) {
+        duck.walk();
+        duck.quack();
+    }
+
+    const myDuck = {
+        walk: () => console.log('Walk like a duck'),
+        quack: () => console.log("Quacking like a duck"),
+        swim: () => console.log("Swimming like a duck")
+    }
+
+    doDuckThings(myDuck);
+   ```
+- 只要一个对象的类型满足接口的要求，我们就可以把这个对象看作这个接口的实例，而不管这个对象的实际类型是什么。
