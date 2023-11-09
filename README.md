@@ -58,7 +58,12 @@
     ```
 13. 字符串字面量类型
     ```ts
-        type Easing = 'ease-in' | "ease-out" | "ease-in-out"
+        type Easing = 'ease-in' | "ease-out" | "ease-in-out";
+
+        type Brand = 'iphone' | 'xiaomi' | 'honor';
+
+        type SKU = `${Brand}-latest`; // "iphone-latest" | "xiaomi-latest" | "honor-latest"
+        
     ```
 
 ## 函数
