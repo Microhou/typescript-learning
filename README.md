@@ -11,6 +11,7 @@
 4. Enum
     > enmu Color {Red, Green, Blue}   let c: Color = Color.Green
     > enmu Color {Red = 1, Green =2, Blue =4} let c = Color.Green;
+    > Typescript 提供基于数字和字符串的枚举。
 5. NUll and Undefined
     > 默认情况下，他们是所以类型的子类型。
 6. any
@@ -65,7 +66,7 @@
         type SKU = `${Brand}-latest`; // "iphone-latest" | "xiaomi-latest" | "honor-latest"
         
     ```
-
+14. 类型检查可以在运行时做，叫做动态类型检查，也可以在编译时做，叫做静态类型检查。
 ## 函数
 1. 函数声明
    ```ts
@@ -599,3 +600,7 @@
     doDuckThings(myDuck);
    ```
 - 只要一个对象的类型满足接口的要求，我们就可以把这个对象看作这个接口的实例，而不管这个对象的实际类型是什么。
+- >摘要: 更少的代码 = 更少的解析/编译(时间) + 更少的传输(时间) + 更少的解压(时间)
+- [JavaScript 的时间消耗](https://github.com/dwqs/blog/issues/59)
+
+- https://vue3js.cn/interview/typescript/interface.html#%E4%B8%80%E3%80%81%E6%98%AF%E4%BB%80%E4%B9%88
